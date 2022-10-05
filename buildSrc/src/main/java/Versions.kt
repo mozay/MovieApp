@@ -29,7 +29,6 @@ object Versions {
     const val supportDesignVersion = "1.2.1"
     const val constraintLayoutVersion = "2.0.4"
     const val multidexVersion = "2.0.1"
-    const val glideVersion = "4.11.0"
     const val daggerHiltVersion = "2.31.2-alpha"
     const val fragmentVersion = "1.2.5"
     const val viewModelExtension = "2.2.0"
@@ -38,5 +37,6 @@ object Versions {
     const val coroutinesVersion = "1.3.9"
     const val picassoVersion = "2.71828"
     const val picassoTransformationVersion = "2.2.1"
-
+    const val exoPlayer = "2.13.2"
+    const val yExtractor = "v1.7.0"
 }

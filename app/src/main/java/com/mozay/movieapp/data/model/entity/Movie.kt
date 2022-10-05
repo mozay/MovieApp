@@ -37,6 +37,9 @@ data class Movie(
     var overview: String?,
 
     @SerializedName("genres")
-    var genres: List<Genre>?
+    var genres: List<Genre>?,
+
+    @SerializedName("trailer")
+    var trailer: String?
 )
 

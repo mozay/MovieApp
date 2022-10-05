@@ -50,4 +50,6 @@ object Libraries {
     const val daggerAnnotations = "com.google.dagger:hilt-android-compiler:${Versions.daggerHiltVersion}"
     const val picasso = "com.squareup.picasso:picasso:${Versions.picassoVersion}"
     const val picassoTransform = "jp.wasabeef:picasso-transformations:${Versions.picassoTransformationVersion}"
+    const val exoPlayer = "com.google.android.exoplayer:exoplayer:${Versions.exoPlayer}"
+    const val youtubeExtractor = "com.github.HaarigerHarald:android-youtubeExtractor:${Versions.yExtractor}"
 }

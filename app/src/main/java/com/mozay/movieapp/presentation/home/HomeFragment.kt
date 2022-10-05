@@ -32,12 +32,12 @@ class HomeFragment : BaseFragment(false) {
         viewModel.snackBarText.observe(viewLifecycleOwner, EventObserver { view?.showSnackBar(it) })
         viewModel.goToMovieDetailsEvent.observe(
             viewLifecycleOwner,
-            EventObserver { navigateToMovieDetails(it.id, it.title) })
+            EventObserver { navigateToMovieDetails(it.id, it.title, it.trailer) })
     }
 
-    private fun navigateToMovieDetails(movieId: Int, movieTitle: String) {
+    private fun navigateToMovieDetails(movieId: Int, movieTitle: String, movieTrailer: String?) {
         val action =
-            HomeFragmentDirections.actionNavigationHomeToMovieDetailsFragment(movieId, movieTitle)
+            HomeFragmentDirections.actionNavigationHomeToMovieDetailsFragment(movieId, movieTitle, movieTrailer ?: "")
         findNavController().navigate(action)
     }
 }

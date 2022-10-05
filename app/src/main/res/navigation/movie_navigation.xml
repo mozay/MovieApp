@@ -24,6 +24,9 @@
         <argument
             android:name="movieTitleArg"
             app:argType="string" />
+        <argument
+            android:name="movieTrailerArg"
+            app:argType="string"/>
     </fragment>
 
 </navigation>

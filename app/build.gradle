@@ -32,6 +32,8 @@ dependencies {
     //3rd-party other
     api Libraries.picasso
     api Libraries.picassoTransform
+    api Libraries.exoPlayer
+    api Libraries.youtubeExtractor
 
     // Testing
     testImplementation TestLibraries.jUnit

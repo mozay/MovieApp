@@ -1,13 +1,11 @@
 package com.mozay.movieapp.data.repository
 
 import androidx.lifecycle.MutableLiveData
-import com.mozay.movieapp.common.builder.ServiceBuilder
 import com.mozay.movieapp.data.model.entity.Movie
 import com.mozay.movieapp.data.remote.TheMovieDatabaseAPI
+import javax.inject.Inject
 
-class MovieRepository : BaseRepository() {
-    private val movieService =
-        ServiceBuilder.buildService(TheMovieDatabaseAPI.MovieService::class.java)
+class MovieRepository @Inject constructor(private val movieService: TheMovieDatabaseAPI.MovieService) : BaseRepository() {
 
     suspend fun loadPopularList(page: Int, errorText: (String) -> Unit) =
         loadPageListCall(

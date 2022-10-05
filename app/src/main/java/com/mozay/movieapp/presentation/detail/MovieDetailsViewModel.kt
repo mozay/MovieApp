@@ -8,20 +8,17 @@ import com.mozay.movieapp.data.model.Event
 import com.mozay.movieapp.data.model.entity.Movie
 import com.mozay.movieapp.data.repository.MovieRepository
 import com.mozay.movieapp.presentation.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MovieDetailsViewModelFactory(private val movieId: Int) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return MovieDetailsViewModel(movieId) as T
-    }
-}
+@HiltViewModel
+class MovieDetailsViewModel@Inject constructor(
+    private val movieRepository: MovieRepository
+) : BaseViewModel() {
 
-class MovieDetailsViewModel(movieId: Int) : BaseViewModel() {
+    lateinit var movie: LiveData<Movie>
 
-    private val movieRepository = MovieRepository()
-    val movie: LiveData<Movie>
-
-    init {
+    fun getMovieDetail(movieId: Int){
         movie = liveDataBlockScope {
             movieRepository.loadDetails(movieId) { mSnackBarText.postValue(Event(it)) }
         }

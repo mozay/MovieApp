@@ -10,7 +10,9 @@ import com.mozay.movieapp.common.extensions.showSnackBar
 import com.mozay.movieapp.data.model.EventObserver
 import com.mozay.movieapp.databinding.FragmentHomeBinding
 import com.mozay.movieapp.presentation.base.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragment(false) {
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var viewDataBinding: FragmentHomeBinding

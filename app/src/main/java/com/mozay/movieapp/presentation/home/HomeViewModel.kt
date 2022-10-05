@@ -11,11 +11,13 @@ import com.mozay.movieapp.data.model.GoToMovie
 import com.mozay.movieapp.data.model.entity.Movie
 import com.mozay.movieapp.data.repository.MovieRepository
 import com.mozay.movieapp.presentation.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-class HomeViewModel : BaseViewModel(), GoToMovie {
-
-    private val movieRepository = MovieRepository()
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val movieRepository: MovieRepository
+) : BaseViewModel(), GoToMovie {
 
     private val loadedPopularMovieList: LiveData<List<Movie>>
     private val loadedInTheatersMovieList: LiveData<List<Movie>>

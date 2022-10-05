@@ -1,0 +1,41 @@
+apply plugin: Plugins.androidApplication
+apply from: "$rootDir/base.gradle"
+
+dependencies {
+    // Architecture Components
+    api ArcComponentsLibs.appCompat
+    api ArcComponentsLibs.recyclerView
+    api ArcComponentsLibs.constraintLayout
+    api ArcComponentsLibs.fragmentKtx
+    api ArcComponentsLibs.viewModel
+    api ArcComponentsLibs.viewModelExtensions
+    api ArcComponentsLibs.lifecycleExtension
+    api ArcComponentsLibs.liveData
+    api ArcComponentsLibs.daggerHilViewModel
+    api ArcComponentsLibs.navFragment
+    api ArcComponentsLibs.navUi
+    api ArcComponentsLibs.navKtx
+    api ArcComponentsLibs.navUiKtx
+    api ArcComponentsLibs.coroutines
+
+
+    //Material design
+    api Libraries.materialDesign
+
+    //retrofit
+    api Libraries.retrofit
+    api Libraries.logInterceptor
+    api Libraries.okHttp
+    api Libraries.gson
+
+
+    //3rd-party other
+    api Libraries.picasso
+    api Libraries.picassoTransform
+
+    // Testing
+    testImplementation TestLibraries.jUnit
+    androidTestImplementation TestLibraries.runner
+    androidTestImplementation TestLibraries.espressoCore
+    androidTestImplementation TestLibraries.androidTestImplementation
+}

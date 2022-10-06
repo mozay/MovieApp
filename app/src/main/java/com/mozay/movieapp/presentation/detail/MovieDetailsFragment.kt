@@ -1,25 +1,24 @@
 package com.mozay.movieapp.presentation.detail
 
-import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
-import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.NonNull
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import at.huber.youtubeExtractor.VideoMeta
-import at.huber.youtubeExtractor.YouTubeExtractor
-import at.huber.youtubeExtractor.YtFile
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.MergingMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.upstream.*
+import com.mozay.movieapp.common.extensions.gone
 import com.mozay.movieapp.common.extensions.showSnackBar
+import com.mozay.movieapp.common.extensions.visible
 import com.mozay.movieapp.data.model.EventObserver
 import com.mozay.movieapp.databinding.FragmentMovieDetailsBinding
 import com.mozay.movieapp.presentation.base.BaseFragment
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerFullScreenListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.ui.DefaultPlayerUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_movie_details.*
 
@@ -31,15 +30,10 @@ class MovieDetailsFragment : BaseFragment(true) {
     private val viewModel: MovieDetailsViewModel by viewModels()
     private lateinit var viewDataBinding: FragmentMovieDetailsBinding
 
-    private var exoPlayer: SimpleExoPlayer? = null
-    private var playWhenReady: Boolean = true
-    private var currentWindow: Int = 0
-    private var playbackPosition : Long = 0
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View {
         viewDataBinding =
             FragmentMovieDetailsBinding.inflate(inflater, container, false)
                 .apply {
@@ -51,37 +45,66 @@ class MovieDetailsFragment : BaseFragment(true) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializePlayer()
         viewModel.getMovieDetail(args.movieIdArg)
+        addObserver()
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private fun initializePlayer(){
-        context?.let {
-            val url = "https://www.youtube.com/watch?v=FNk7Cu4sJOs&html5=1"
-            exoPlayer = SimpleExoPlayer.Builder(it).build()
-            movieTrailer.player = exoPlayer
+    private fun addObserver(){
+        viewModel.videos?.observe(viewLifecycleOwner) {
+            it?.let { videos ->
+                if (videos.isNotEmpty()) {
+                    movieVideoProgressBar.gone()
+                    movieTrailer.visible()
+                    initYoutubePlayer(videos.first().key)
+                } else movieTrailer.gone()
+            }
+        }
+    }
 
-            val extractor = object : YouTubeExtractor(it){
-                override fun onExtractionComplete(
-                    ytFiles: SparseArray<YtFile>?,
-                    videoMeta: VideoMeta?
-                ) {
-                    if (ytFiles != null){
-                        val videoTag = 137
-                        val audioTag = 140
-                        val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
-                            .createMediaSource(MediaItem.fromUri(ytFiles.get(audioTag).url))
-                        val videoSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
-                            .createMediaSource(MediaItem.fromUri(ytFiles.get(videoTag).url))
-                        exoPlayer?.setMediaSource(MergingMediaSource(true, videoSource, audioSource), true)
-                        exoPlayer?.prepare()
-                        exoPlayer?.playWhenReady = playWhenReady
-                        exoPlayer?.seekTo(currentWindow, playbackPosition)
-                    }
-                }
+    /** API şuanda trailer için youtube linkleri dönüyor.
+    ExoPlayer doğrudan youtube videoları oynatamıyor.
+    Extractor librarys kullanarak bunu yapmak mümkün fakat library şuan extract işlemlerinde hata veriyor.
+    Konuyla ilgili açılmış issue'lar mevcut.
+    O yüzden farklı bir media player kullanmak durumunda kaldım.
+     * */
+    private fun initYoutubePlayer(key: String){
+        lifecycle.addObserver(movieTrailer)
+        val listener = object : AbstractYouTubePlayerListener() {
+            override fun onReady(@NonNull youTubePlayer: YouTubePlayer) {
+                // using pre-made custom ui
+                val defaultPlayerUiController =
+                    DefaultPlayerUiController(movieTrailer, youTubePlayer)
+                movieTrailer.setCustomPlayerUi(defaultPlayerUiController.rootView)
+                youTubePlayer.cueVideo(key, 0f)
+            }
+        }
+        movieTrailer.addYouTubePlayerListener(listener)
 
-            }.extract(url, false, true)
+        val fullScreenListener = object : YouTubePlayerFullScreenListener {
+            override fun onYouTubePlayerEnterFullScreen() {
+                moviesLayout.gone()
+
+            }
+
+            override fun onYouTubePlayerExitFullScreen() {
+                moviesLayout.visible()
+            }
+        }
+
+        movieTrailer.addFullScreenListener(fullScreenListener)
+
+        // disable iframe ui
+        val options: IFramePlayerOptions = IFramePlayerOptions.Builder().controls(0).build()
+        movieTrailer.initialize(listener, options)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val currentOrientation = resources.configuration.orientation
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            movieTrailer.enterFullScreen()
+        } else {
+            movieTrailer.exitFullScreen()
         }
     }
 
@@ -89,27 +112,8 @@ class MovieDetailsFragment : BaseFragment(true) {
         viewModel.snackBarText.observe(viewLifecycleOwner, EventObserver { view?.showSnackBar(it) })
     }
 
-    private fun releasePlayer() {
-        exoPlayer?.let { player ->
-            player.release()
-            exoPlayer = null
-        }
-    }
-
-
-
-    override fun onStop() {
-        super.onStop()
-        releasePlayer()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        releasePlayer()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        releasePlayer()
+        try { movieTrailer.release() }catch (ignored: Exception){ }
     }
 }

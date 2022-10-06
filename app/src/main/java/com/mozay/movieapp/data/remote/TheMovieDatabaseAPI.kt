@@ -2,6 +2,7 @@ package com.mozay.movieapp.data.remote
 
 import com.mozay.movieapp.data.model.entity.Movie
 import com.mozay.movieapp.data.model.network.MoviesResponse
+import com.mozay.movieapp.data.model.network.VideosResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -31,6 +32,9 @@ object TheMovieDatabaseAPI {
 
         @GET("/$API_VERSION/movie/{id}")
         fun fetchDetails(@Path("id") id: Int): Call<Movie>
+        
+        @GET("/$API_VERSION/movie/{id}/videos")
+        fun fetchVideos(@Path("id") id: Int): Call<VideosResponse>
     }
 }
 

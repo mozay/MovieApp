@@ -19,7 +19,7 @@ class HomeFragment : BaseFragment(false) {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewDataBinding =
             FragmentHomeBinding.inflate(inflater, container, false).apply {
                 viewmodel = viewModel

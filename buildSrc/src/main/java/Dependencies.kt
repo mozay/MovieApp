@@ -52,4 +52,5 @@ object Libraries {
     const val picassoTransform = "jp.wasabeef:picasso-transformations:${Versions.picassoTransformationVersion}"
     const val exoPlayer = "com.google.android.exoplayer:exoplayer:${Versions.exoPlayer}"
     const val youtubeExtractor = "com.github.HaarigerHarald:android-youtubeExtractor:${Versions.yExtractor}"
+    const val youtubePlayer = "com.pierfrancescosoffritti.androidyoutubeplayer:core:${Versions.youtubePlayerVersion}"
 }

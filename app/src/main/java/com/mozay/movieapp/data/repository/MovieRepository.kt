@@ -2,6 +2,7 @@ package com.mozay.movieapp.data.repository
 
 import androidx.lifecycle.MutableLiveData
 import com.mozay.movieapp.data.model.entity.Movie
+import com.mozay.movieapp.data.model.entity.Video
 import com.mozay.movieapp.data.remote.TheMovieDatabaseAPI
 import javax.inject.Inject
 
@@ -30,4 +31,12 @@ class MovieRepository @Inject constructor(private val movieService: TheMovieData
 
     suspend fun loadDetails(id: Int, errorText: (String) -> Unit) =
         loadCall({ movieService.fetchDetails(id) }, MutableLiveData<Movie>(), errorText)
+
+
+    suspend fun loadVideos(id: Int, errorText: (String) -> Unit) =
+        loadListCall(
+            { movieService.fetchVideos(id) },
+            MutableLiveData<List<Video>>(),
+            errorText
+        )
 }
